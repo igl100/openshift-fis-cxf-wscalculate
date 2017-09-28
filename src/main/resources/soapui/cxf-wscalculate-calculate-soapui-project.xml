@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wss="http://wssum.ws.demos.fuse.redhat.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <wss:calculate>
+         <!--Optional:-->
+            <operType>sum</operType>
+            <sender>isaac</sender>
+            <cuerpo>
+            	<oper1>10</oper1>
+            	<oper2>50</oper2>
+            </cuerpo>
+      </wss:calculate>
+   </soapenv:Body>
+</soapenv:Envelope>
