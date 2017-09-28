@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xsi:schemaLocation="
+         http://www.springframework.org/schema/beans 
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://camel.apache.org/schema/spring 
+         http://camel.apache.org/schema/spring/camel-spring.xsd
+         http://camel.apache.org/schema/cxf 
+         http://camel.apache.org/schema/cxf/camel-cxf.xsd">
+
+	<cxf:cxfEndpoint id="wsAddService"
+    xmlns:client="http://ws.fis.openshift.demos.redhat.com/"
+    address="http://cxf-wscalculator/service/add" endpointName="client:AddEndpointPort"
+    serviceName="client:AddEndpointService" wsdlURL="http://cxf-wscalculator/service/add?wsdl"/>
+    
+    <cxf:cxfEndpoint id="wsSumService"
+    xmlns:client="http://ws.fis.openshift.demos.redhat.com/"
+    address="http://cxf-wscalculator/service/sum" endpointName="client:SumEndpointPort"
+    serviceName="client:SumEndpointService" wsdlURL="http://cxf-wscalculator/service/sum?wsdl"/>
+    
+    <cxf:cxfEndpoint id="wsMultiplyService"
+    xmlns:client="http://ws.fis.openshift.demos.redhat.com/"
+    address="http://cxf-wscalculator/service/multiply" endpointName="client:MultiplyEndpointPort"
+    serviceName="client:MultiplyEndpointService" wsdlURL="http://cxf-wscalculator/service/multiply?wsdl"/>
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring" xmlns:wss="http://wssum.ws.demos.fuse.redhat.com/">
+  <route>
+    <from uri="cxf:bean:calculateEndpoint?dataFormat=PAYLOAD"/>
+    <choice>
+      <when>
+        <xpath>/wss:calculate/operType='sum'</xpath>
+        <to uri="xslt:xslt/transformSum.xsl"/>
+        <!-- to uri="validator:wsdl/xsd/sum.xsd"/ -->
+        <setHeader headerName="operationName">
+          <constant>sum</constant>
+        </setHeader>
+        <setHeader headerName="operationNamespace">
+      		<constant>http://wssum.ws.demos.fuse.redhat.com/</constant>
+        </setHeader>
+        <to uri="cxf:bean:wsSumService?dataFormat=PAYLOAD"/>
+        <to uri="xslt:xslt/transformResponse.xsl"/>
+      </when>
+      <when>
+        <xpath>/wss:calculate/operType='add'</xpath>
+        <to uri="xslt:xslt/transformAdd.xsl"/>
+        <!-- to uri="validator:wsdl/xsd/add.xsd"/ -->
+        <setHeader headerName="operationName">
+          <constant>add</constant>
+        </setHeader>
+        <setHeader headerName="operationNamespace">
+      		<constant>http://wsadd.ws.demos.fuse.redhat.com/</constant>
+        </setHeader>
+        <to uri="cxf:bean:wsAddService?dataFormat=PAYLOAD"/>
+        <to uri="xslt:xslt/transformResponse.xsl"/>
+      </when>
+      <when>
+        <xpath>/wss:calculate/operType='multiply'</xpath>
+        <to uri="xslt:xslt/transformMultiply.xsl"/>
+        <!-- to uri="validator:wsdl/xsd/multiply.xsd"/ -->
+        <setHeader headerName="operationName">
+          <constant>multiply</constant>
+        </setHeader>
+        <setHeader headerName="operationNamespace">
+      		<constant>http://wsmultiply.ws.demos.fuse.redhat.com/</constant>
+        </setHeader>
+        <to uri="cxf:bean:wsMultiplyService?dataFormat=PAYLOAD"/>
+        <log message="Response ${body}"/>
+        <to uri="xslt:xslt/transformResponse.xsl"/>
+      </when>
+      <otherwise>
+        <to uri="language:constant:classpath:error.xml"/>
+      </otherwise>
+    </choice>
+  </route>
+</camelContext>
+
+</beans>

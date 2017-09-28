@@ -1,0 +1,5 @@
+spec:
+  to:
+    kind: Service
+    name: cxf-wscalculate
+    path: /service

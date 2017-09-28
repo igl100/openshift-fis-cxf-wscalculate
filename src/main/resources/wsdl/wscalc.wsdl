@@ -1,0 +1,55 @@
+<wsdl:definitions name="AddEndpointService" targetNamespace="http://wssum.ws.demos.fuse.redhat.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://wssum.ws.demos.fuse.redhat.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http">
+   <wsdl:types>
+      <xs:schema elementFormDefault="unqualified" targetNamespace="http://wssum.ws.demos.fuse.redhat.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+         <xs:element name="calculate" type="tns:calculate"/>
+         <xs:element name="calculateResponse" type="tns:calculateResponse"/>
+         <xs:complexType name="calculate">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="arg0" type="tns:calculateDTO"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="calculateDTO">
+            <xs:sequence>
+               <xs:element maxOccurs="1" minOccurs="1" name="operType" nillable="false" type="xs:int"/>
+               <xs:element maxOccurs="1" minOccurs="1" name="sender" nillable="false" type="xs:string"/>
+               <xsd:element maxOccurs="1" minOccurs="1" name="cuerpo" nillable="false" type="xsd:anyType"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="calculateResponse">
+            <xs:sequence>
+               <xsd:element maxOccurs="1" minOccurs="1" name="operationId" nillable="false" type="xs:string"/>
+               <xsd:element maxOccurs="1" minOccurs="1" name="responseObject" nillable="false" type="xsd:anyType"/>
+            </xs:sequence>
+         </xs:complexType>
+      </xs:schema>
+   </wsdl:types>
+   <wsdl:message name="calculate">
+      <wsdl:part element="tns:calculate" name="parameters"/>
+   </wsdl:message>
+   <wsdl:message name="calculateResponse">
+      <wsdl:part element="tns:calculateResponse" name="parameters"/>
+   </wsdl:message>
+   <wsdl:portType name="CalculateEndpoint">
+      <wsdl:operation name="calculate">
+         <wsdl:input message="tns:calculate" name="calculate"/>
+         <wsdl:output message="tns:calculateResponse" name="calculateResponse"/>
+      </wsdl:operation>
+   </wsdl:portType>
+   <wsdl:binding name="CalculateEndpointServiceSoapBinding" type="tns:CalculateEndpoint">
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <wsdl:operation name="calculate">
+         <soap:operation soapAction="calculate" style="document"/>
+         <wsdl:input name="calculate">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="calculateResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+   </wsdl:binding>
+   <wsdl:service name="CalculateEndpointService">
+      <wsdl:port binding="tns:CalculateEndpointServiceSoapBinding" name="CalculateEndpointPort">
+         <soap:address location="/calculate"/>
+      </wsdl:port>
+   </wsdl:service>
+</wsdl:definitions>
